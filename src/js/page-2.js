@@ -12,7 +12,7 @@ const lightbox = new SimpleLightbox('.gallery a', {
   captionsData: 'alt',
 });
 
-form.addEventListener('submit', async event => {
+form.addEventListener('submit', event => {
   event.preventDefault();
   const value = form.elements.search.value.trim();
   if (value === '') {
@@ -23,27 +23,31 @@ form.addEventListener('submit', async event => {
     });
     return;
   }
+  gallery.innerHTML = '';
   loader.classList.remove('hidden');
 
-  const response = await fetch(
+  fetch(
     `https://pixabay.com/api/?key=54641867-0b2bd143cc574463d0ab3cc86&q=${value}&image_type=photo&orientation=horizontal&safesearch=true`
-  );
-
-  const data = await response.json();
-  if (data.hits.length === 0) {
-    iziToast.error({
-      title: `Error`,
-      message: `Sorry, there are no images matching <br> your search query. Please try again.`,
-      position: `topRight`,
-      color: '#EF4040',
-      textWrapping: true,
-    });
-  }
-  loader.classList.add('hidden');
-
-  gallery.innerHTML = data.hits
-    .map(
-      hit => `<div class="photo-card">
+  )
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(response.status);
+      }
+      return response.json();
+    })
+    .then(data => {
+      if (data.hits.length === 0) {
+        iziToast.error({
+          title: 'Error',
+          message:
+            'Sorry, threre are no images matching your search query. Please try again',
+          position: 'topRight',
+        });
+        return;
+      }
+      gallery.innerHTML = data.hits
+        .map(
+          hit => `<div class="photo-card">
       <a href= "${hit.largeImageURL}">
       <img src="${hit.webformatURL}" alt="${hit.tags}" loading="lazy" />
       </a>
@@ -63,8 +67,19 @@ form.addEventListener('submit', async event => {
         </p>
       </div>
     </div>`
-    )
-    .join('');
-  lightbox.refresh();
-  console.log(data);
+        )
+        .join('');
+      lightbox.refresh();
+    })
+    .catch(() => {
+      iziToast.error({
+        title: 'Error',
+        message: `Something went wrong. Please try again later.`,
+        position: 'topRight',
+      });
+    })
+    .finally(() => {
+      loader.classList.add('hidden');
+      form.reset();
+    });
 });
