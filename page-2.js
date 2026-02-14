@@ -1,4 +1,4 @@
-import"./assets/modulepreload-polyfill-B5Qt9EMX.js";import{S as n,i as s}from"./assets/vendor-B2mb6eXk.js";const t=document.querySelector(".search-form"),l=document.querySelector(".gallery"),r=document.querySelector(".loader"),c=new n(".gallery a",{captions:!0,captionsData:"alt"});t.addEventListener("submit",async i=>{i.preventDefault();const o=t.elements.search.value.trim();if(o===""){s.error({title:"Error",message:"Please enter a search query!",position:"topRight"});return}r.classList.remove("hidden");const a=await(await fetch(`https://pixabay.com/api/?key=54641867-0b2bd143cc574463d0ab3cc86&q=${o}&image_type=photo&orientation=horizontal&safesearch=true`)).json();a.hits.length===0&&s.error({title:"Error",message:"Sorry, there are no images matching <br> your search query. Please try again.",position:"topRight",color:"#EF4040",textWrapping:!0}),r.classList.add("hidden"),l.innerHTML=a.hits.map(e=>`<div class="photo-card">
+import"./assets/modulepreload-polyfill-B5Qt9EMX.js";import{S as l,i as t}from"./assets/vendor-B2mb6eXk.js";const a=document.querySelector(".search-form"),s=document.querySelector(".gallery"),i=document.querySelector(".loader"),c=new l(".gallery a",{captions:!0,captionsData:"alt"});a.addEventListener("submit",n=>{n.preventDefault();const o=a.elements.search.value.trim();if(o===""){t.error({title:"Error",message:"Please enter a search query!",position:"topRight"});return}s.innerHTML="",i.classList.remove("hidden"),fetch(`https://pixabay.com/api/?key=54641867-0b2bd143cc574463d0ab3cc86&q=${o}&image_type=photo&orientation=horizontal&safesearch=true`).then(r=>{if(!r.ok)throw new Error(r.status);return r.json()}).then(r=>{if(r.hits.length===0){t.error({title:"Error",message:"Sorry, threre are no images matching your search query. Please try again",position:"topRight"});return}s.innerHTML=r.hits.map(e=>`<div class="photo-card">
       <a href= "${e.largeImageURL}">
       <img src="${e.webformatURL}" alt="${e.tags}" loading="lazy" />
       </a>
@@ -17,5 +17,5 @@ import"./assets/modulepreload-polyfill-B5Qt9EMX.js";import{S as n,i as s}from"./
           <b>Downloads</b>${e.downloads}
         </p>
       </div>
-    </div>`).join(""),c.refresh(),console.log(a)});
+    </div>`).join(""),c.refresh()}).catch(()=>{t.error({title:"Error",message:"Something went wrong. Please try again later.",position:"topRight"})}).finally(()=>{i.classList.add("hidden"),a.reset()})});
 //# sourceMappingURL=page-2.js.map
